@@ -18,11 +18,9 @@ abstract class TaskManager {
   /// finds a task from the task manager,
   /// throws [TaskManagerException] if multiple tasks of this type are present
   /// was passed
-  T? find<T>() {
+  T find<T>() {
     final foundForType = _tasksByType[T] ?? {};
-    if (foundForType.isEmpty) {
-      return null;
-    }
+
     if (foundForType.length > 1) {
       throw TaskManagerException(
         'Multiple tasks present for type ${T.runtimeType}'

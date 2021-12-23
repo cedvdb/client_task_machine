@@ -90,7 +90,7 @@ abstract class Task<I, O> {
   /// closes the task, a closed task will be removed from the task manager
   @protected
   Future<void> close() async {
-    setState(TaskClosing(input: s, output: output, error: error, isLoading: isLoading))
+    setState(TaskClosing(state));
     await _stateController.close();
   }
 }

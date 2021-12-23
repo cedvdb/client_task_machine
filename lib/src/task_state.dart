@@ -1,3 +1,6 @@
+import 'dart:isolate';
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 
 import 'data_state.dart';
@@ -101,5 +104,6 @@ class TaskClosing<I, O> extends TaskState<I, O> {
   TaskClosing(TaskState<I, O> currentState)
       : error = currentState.error,
         input = currentState.input,
-        output = currentState.output;
+        output = currentState.output,
+        isLoading = currentState.isLoading;
 }
