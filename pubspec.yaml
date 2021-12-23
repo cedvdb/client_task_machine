@@ -1,0 +1,17 @@
+name: task_machine
+description: A starting point for Dart libraries or applications.
+version: 0.0.1
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.16.0-85.0.dev <3.0.0'
+
+
+dependencies:
+  rxdart: any
+  meta: ^1.7.0
+  equatable: ^2.0.3
+
+dev_dependencies:
+  lints: ^1.0.0
+  test: ^1.16.0
