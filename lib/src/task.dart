@@ -17,11 +17,6 @@ abstract class Task<I, O> {
   late final Stream<TaskState<I, O>> stateStream = _stateController.stream;
 
   TaskState<I, O> get state => _stateController.value;
-  Status get status => state.status;
-  Object? get error => state.error;
-  bool get isLoading => state.isLoading;
-  I get input => state.input;
-  DataState<O>? get output => state.output;
 
   Task({required I input}) {
     _stateController.add(TaskReady(input: input));
@@ -37,9 +32,9 @@ abstract class Task<I, O> {
   /// sets loading: true
   Future<void> start() {
     _setState(
-      TaskRunning(input: input, isLoading: true),
+      TaskRunning(input: state.input, isLoading: true),
     );
-    return execute(input);
+    return execute(state.input);
   }
 
   /// main execution of the [Task]
@@ -53,7 +48,8 @@ abstract class Task<I, O> {
   @protected
   Future<void> restart(I newInput) {
     // not sure this method should stay or if start is enough if output
-    _setState(TaskRunning(input: newInput, isLoading: true, output: output));
+    _setState(
+        TaskRunning(input: newInput, isLoading: true, output: state.output));
     return execute(newInput);
   }
 
@@ -62,11 +58,11 @@ abstract class Task<I, O> {
   /// throws TaskError if task is already completed
   @protected
   void complete(O? outputData) {
-    if (status == Status.completed) {
+    if (state.status == Status.completed) {
       throw TaskError('Task already completed');
     }
     _setState(
-      TaskCompleted(input: input, output: DataState.loaded(outputData)),
+      TaskCompleted(input: state.input, output: DataState.loaded(outputData)),
     );
   }
 
@@ -75,7 +71,7 @@ abstract class Task<I, O> {
   @protected
   void onError(Object error) {
     _setState(
-      TaskCompleted(error: error, input: input, output: output),
+      TaskCompleted(error: error, input: state.input, output: state.output),
     );
   }
 
@@ -85,7 +81,7 @@ abstract class Task<I, O> {
   void onData(O outputData) {
     _setState(
       TaskRunning(
-        input: input,
+        input: state.input,
         output: DataState.loaded(outputData),
         isLoading: false,
       ),
