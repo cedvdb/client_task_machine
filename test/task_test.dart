@@ -1,14 +1,6 @@
 import 'package:test/test.dart';
 import 'package:task_machine/task_machine.dart';
 
-class FakeFirebaseMsgService {
-  static Future<void> find({
-    required String chatId,
-    required int limit,
-  }) async {}
-  static Future<void> create(Map created) async {}
-}
-
 class DoNothingTask extends Task<int, int> {
   int executionCount = 0;
   DoNothingTask({required int input}) : super(input: input);

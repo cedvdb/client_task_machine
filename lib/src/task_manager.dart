@@ -7,13 +7,14 @@ class TaskManagerException implements Exception {
   TaskManagerException(this.description);
 }
 
-abstract class TaskManager {
+class TaskManager {
   final Set<Task> _allTasks = {};
+  Set<Task> get currentTasks => Set.unmodifiable(_allTasks);
   final Map<Type, Set<Task>> _tasksByType = {};
   final Map<Task, StreamSubscription> _subscriptions = {};
-  final StreamController<Set<Task>> _stateController = StreamController();
-  late final Stream<Set<Task>> state =
-      _stateController.stream.asBroadcastStream();
+  final StreamController<Set<Task>> _tasksController = StreamController();
+  late final Stream<Set<Task>> tasksStream =
+      _tasksController.stream.asBroadcastStream();
 
   /// finds a task from the task manager,
   /// throws [TaskManagerException] if multiple tasks of this type are present
@@ -30,19 +31,11 @@ abstract class TaskManager {
     return foundForType.first as T;
   }
 
-  /// finds all tasks for a specific type
-  Set<T>? findAll<T extends Task>() {
-    // we need to cast here because the compiler can't be sure
-    // that every task in the set is of that type, only the manager's logic
-    // knows that
-    return (_tasksByType[T] ?? {}) as Set<T>?;
-  }
-
   /// adds a [task] to the task stack and starts it
-  void start(Task task) {
+  Future<void> start(Task task) {
     _addTask(task);
     _listenToTask(task);
-    task.start();
+    return task.start();
   }
 
   /// adds task to the different data structures
@@ -65,7 +58,7 @@ abstract class TaskManager {
 
   /// adds all tasks to the stream
   void _onTaskChanged(Task task) {
-    _stateController.add(_allTasks);
+    _tasksController.add(currentTasks);
   }
 
   void _removeTask(Task task) {
@@ -73,5 +66,6 @@ abstract class TaskManager {
     _tasksByType[task.runtimeType]?.remove(task);
     _subscriptions[task]?.cancel();
     _subscriptions.remove(task);
+    _onTaskChanged(task);
   }
 }
