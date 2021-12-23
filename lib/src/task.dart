@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
 import 'package:meta/meta.dart';
+import 'package:rxdart/rxdart.dart';
+
 import 'data_state.dart';
 import 'task_state.dart';
 
@@ -32,12 +33,12 @@ abstract class Task<I, O> {
   @mustCallSuper
   Future<void> start() {
     _setState(TaskRunning(input: state.input, isLoading: true));
-    return execute(state.input);
+    return execute();
   }
 
   /// main execution of the [Task]
   @protected
-  Future<void> execute(I input);
+  Future<void> execute();
 
   /// restarts the execution of the task with a new [newInput] and by keeping
   /// the same output until another is generated.
@@ -49,7 +50,7 @@ abstract class Task<I, O> {
     // not sure this method should stay or if start is enough if output
     _setState(
         TaskRunning(input: newInput, isLoading: true, output: state.output));
-    return execute(newInput);
+    return execute();
   }
 
   /// completes the task with task state:
@@ -97,4 +98,10 @@ abstract class Task<I, O> {
     _setState(TaskClosing(state));
     await _stateController.close();
   }
+
+  @override
+  String toString() =>
+      '$runtimeType(status: ${state.status} input: ${state.input}, '
+      'output: ${state.output}, isLoading: ${state.isLoading}, '
+      'hasError: ${state.error != null})';
 }

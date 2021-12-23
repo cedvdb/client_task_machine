@@ -12,7 +12,7 @@ class DoNothingTask extends Task<int, int> {
   }
 
   @override
-  Future<void> execute(int input) async {}
+  Future<void> execute() async {}
 }
 
 void main() {

@@ -13,7 +13,7 @@ import 'package:task_machine/task_machine.dart';
 /// Both [existsBuilder] and [notExistsBuilder] have a [isLoading] parameter.
 /// That is because a task can have data and still be loading. For example
 /// infinite scroll, chat messages, filters... Typically in those cases
-/// the data will still be displayed with a loading indicator (or not).
+/// the data will still be displayed with sometimes a loading indicator.
 class TaskDataConsumer<O> extends StatefulWidget {
   final Widget Function() loadingBuilder;
   final Widget Function(O data, bool isLoading) existsBuilder;

@@ -5,7 +5,7 @@ class DoNothingTask extends Task<int, int> {
   int executionCount = 0;
   DoNothingTask({required int input}) : super(input: input);
   @override
-  Future<void> execute(int input) async {
+  Future<void> execute() async {
     executionCount++;
   }
 }

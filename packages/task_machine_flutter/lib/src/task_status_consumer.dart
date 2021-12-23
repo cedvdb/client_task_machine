@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:task_machine/task_machine.dart';
 
-class TaskBuilder extends StatefulWidget {
+class TaskStatusConsumer extends StatefulWidget {
   final Task task;
   final Widget Function() readyBuilder;
   final Widget Function() runningBuilder;
   final Widget Function() completedBuilder;
 
-  const TaskBuilder({
+  const TaskStatusConsumer({
     Key? key,
     required this.task,
     required this.readyBuilder,
@@ -18,10 +18,10 @@ class TaskBuilder extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<TaskBuilder> createState() => _TaskBuilderState();
+  State<TaskStatusConsumer> createState() => _TaskStatusConsumerState();
 }
 
-class _TaskBuilderState extends State<TaskBuilder> {
+class _TaskStatusConsumerState extends State<TaskStatusConsumer> {
   late StreamSubscription _subscription;
   late TaskState _taskState;
 
