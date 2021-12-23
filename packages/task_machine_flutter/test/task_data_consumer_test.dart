@@ -3,19 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:task_machine/task_machine.dart';
 import 'package:task_machine_flutter/src/task_data_consumer.dart';
 
-typedef Input = int;
-typedef Output = int;
-
-class DoNothingTask extends Task<int, int> {
-  int executionCount = 0;
-  DoNothingTask({required int input}) : super(input: input);
-  @override
-  Future<void> execute() async {
-    executionCount++;
-  }
-}
-
-class AnException implements Exception {}
+import 'dummy_task.dart';
 
 void main() {
   late Task task;

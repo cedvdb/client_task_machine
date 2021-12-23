@@ -9,6 +9,9 @@ import 'task_state.dart';
 class TaskError {
   final String description;
   TaskError(this.description);
+
+  @override
+  String toString() => 'TaskError(description: $description)';
 }
 
 abstract class Task<I, O> {
@@ -20,7 +23,7 @@ abstract class Task<I, O> {
   late TaskState<I, O> _state;
   TaskState<I, O> get state => _state;
 
-  Task({required I input}) : _state = TaskReady(input: input);
+  Task({required I input}) : _state = TaskState.ready(input: input);
 
   /// sets the state of the task to [taskState]
   void _setState(TaskState<I, O> taskState) {
@@ -28,11 +31,16 @@ abstract class Task<I, O> {
     _stateController.add(_state);
   }
 
+  // the methods below this basically call set state with a set of defined
+  // states, if the defined state prove to not fit all use cases
+  // it might be worth letting the client set the state himself
+  // (and remove those predefined behaviors)
+
   /// Start the execution of the task with task state:
   /// state: TaskRunning(input: state.input, isLoading: true)
   @mustCallSuper
   Future<void> start() {
-    _setState(TaskRunning(input: state.input, isLoading: true));
+    _setState(TaskState.running(input: state.input, isLoading: true));
     return execute();
   }
 
@@ -48,8 +56,8 @@ abstract class Task<I, O> {
   @protected
   Future<void> restart(I newInput) {
     // not sure this method should stay or if start is enough if output
-    _setState(
-        TaskRunning(input: newInput, isLoading: true, output: state.output));
+    _setState(TaskState.running(
+        input: newInput, isLoading: true, output: state.output));
     return execute();
   }
 
@@ -63,7 +71,8 @@ abstract class Task<I, O> {
       throw TaskError('Task already completed');
     }
     _setState(
-      TaskCompleted(input: state.input, output: DataState.loaded(outputData)),
+      TaskState.completed(
+          input: state.input, output: DataState.loaded(outputData)),
     );
   }
 
@@ -73,7 +82,8 @@ abstract class Task<I, O> {
   @protected
   void onError(Object error) {
     _setState(
-      TaskCompleted(error: error, input: state.input, output: state.output),
+      TaskState.completed(
+          error: error, input: state.input, output: state.output),
     );
   }
 
@@ -83,7 +93,7 @@ abstract class Task<I, O> {
   @protected
   void onData(O? outputData) {
     _setState(
-      TaskRunning(
+      TaskState.running(
         input: state.input,
         output: DataState.loaded(outputData),
         isLoading: false,
@@ -95,7 +105,7 @@ abstract class Task<I, O> {
   @mustCallSuper
   @protected
   Future<void> close() async {
-    _setState(TaskClosing(state));
+    _setState(TaskState.closing(previousState: state));
     await _stateController.close();
   }
 

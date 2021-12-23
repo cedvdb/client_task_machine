@@ -23,9 +23,9 @@ class TaskState<I, O> with EquatableMixin {
   TaskState.running({
     required this.input,
     required this.isLoading,
+    this.error,
     this.output,
-  })  : status = Status.running,
-        error = null;
+  }) : status = Status.running;
 
   TaskState.completed({
     required this.input,
@@ -33,6 +33,13 @@ class TaskState<I, O> with EquatableMixin {
     this.error,
   })  : status = Status.completed,
         isLoading = false;
+
+  TaskState.closing({required TaskState<I, O> previousState})
+      : status = Status.closing,
+        error = previousState.error,
+        isLoading = previousState.isLoading,
+        input = previousState.input,
+        output = null;
 
   @override
   List<Object?> get props => [status, error, isLoading, input, output];

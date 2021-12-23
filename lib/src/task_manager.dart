@@ -5,6 +5,9 @@ import 'task.dart';
 class TaskManagerException implements Exception {
   final String description;
   TaskManagerException(this.description);
+
+  @override
+  String toString() => 'TaskManagerException(description: $description)';
 }
 
 class TaskManager {

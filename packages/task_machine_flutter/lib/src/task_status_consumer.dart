@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:task_machine/task_machine.dart';
 
-class TaskStatusConsumer extends StatefulWidget {
-  final Task task;
+class TaskStatusConsumer<O> extends StatefulWidget {
+  final Task<dynamic, O> task;
   final Widget Function() readyBuilder;
   final Widget Function() runningBuilder;
-  final Widget Function() completedBuilder;
-  final Widget Function() errorBuilder;
+  final Widget Function(DataState<O>) completedBuilder;
+  final Widget Function(Object e) errorBuilder;
 
   const TaskStatusConsumer({
     Key? key,
@@ -20,12 +20,12 @@ class TaskStatusConsumer extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<TaskStatusConsumer> createState() => _TaskStatusConsumerState();
+  State<TaskStatusConsumer<O>> createState() => _TaskStatusConsumerState<O>();
 }
 
-class _TaskStatusConsumerState extends State<TaskStatusConsumer> {
+class _TaskStatusConsumerState<O> extends State<TaskStatusConsumer<O>> {
   late StreamSubscription _subscription;
-  late TaskState _taskState;
+  late TaskState<dynamic, O> _taskState = TaskState.ready(input: null);
 
   @override
   void initState() {
@@ -43,14 +43,19 @@ class _TaskStatusConsumerState extends State<TaskStatusConsumer> {
 
   @override
   Widget build(BuildContext context) {
+    final error = _taskState.error;
+
     if (_taskState.status == Status.ready) {
       return widget.readyBuilder();
     }
     if (_taskState.status == Status.running) {
       return widget.runningBuilder();
     }
+    if (error != null) {
+      return widget.errorBuilder(error);
+    }
     if (_taskState.status == Status.completed) {
-      return widget.completedBuilder();
+      return widget.completedBuilder(_taskState.output!);
     }
     throw 'Task status ${_taskState.status} unsupported';
   }
