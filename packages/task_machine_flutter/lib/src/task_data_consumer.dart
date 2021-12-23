@@ -37,7 +37,7 @@ class TaskDataConsumer<O> extends StatefulWidget {
 
 class _TaskDataConsumerState<O> extends State<TaskDataConsumer<O>> {
   late StreamSubscription _subscription;
-  late TaskState<dynamic, O> _taskState;
+  late TaskState<dynamic, O> _taskState = TaskReady(input: null);
   @override
   void initState() {
     _subscription = widget.task.stateStream.listen((taskState) {
@@ -69,7 +69,7 @@ class _TaskDataConsumerState<O> extends State<TaskDataConsumer<O>> {
     }
 
     // this one must be last because it can be true for conditions above too.
-    if (state.isLoading) {
+    if (state.isLoading || state.status == Status.ready) {
       return widget.loadingBuilder();
     }
 

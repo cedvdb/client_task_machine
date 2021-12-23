@@ -81,7 +81,7 @@ abstract class Task<I, O> {
   /// set output: DataState.loaded(outputData), loading: true
   @mustCallSuper
   @protected
-  void onData(O outputData) {
+  void onData(O? outputData) {
     _setState(
       TaskRunning(
         input: state.input,

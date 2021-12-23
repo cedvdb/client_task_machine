@@ -8,6 +8,7 @@ class TaskStatusConsumer extends StatefulWidget {
   final Widget Function() readyBuilder;
   final Widget Function() runningBuilder;
   final Widget Function() completedBuilder;
+  final Widget Function() errorBuilder;
 
   const TaskStatusConsumer({
     Key? key,
@@ -15,6 +16,7 @@ class TaskStatusConsumer extends StatefulWidget {
     required this.readyBuilder,
     required this.runningBuilder,
     required this.completedBuilder,
+    required this.errorBuilder,
   }) : super(key: key);
 
   @override

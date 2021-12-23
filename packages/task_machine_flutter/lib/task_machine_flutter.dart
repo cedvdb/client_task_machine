@@ -1,7 +1,5 @@
 library task_machine_flutter;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/task_data_consumer.dart';
+export 'src/task_status_consumer.dart';
+export 'package:task_machine/task_machine.dart';
