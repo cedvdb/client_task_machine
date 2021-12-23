@@ -4,6 +4,8 @@ import 'data_state.dart';
 
 enum Status { ready, running, completed, closing }
 
+// those properties could, and maybe should be on the task itself
+
 abstract class TaskState<I, O> with EquatableMixin {
   Status get status;
   Object? get error;
