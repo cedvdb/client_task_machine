@@ -1,13 +1,11 @@
-import 'dart:isolate';
-import 'dart:typed_data';
-
 import 'package:equatable/equatable.dart';
 
 import 'data_state.dart';
 
 enum Status { ready, running, completed, closing }
 
-// those properties could, and maybe should be on the task itself
+// those properties could, and maybe should be on the task itself, but since
+// some properties
 
 abstract class TaskState<I, O> with EquatableMixin {
   Status get status;
