@@ -25,7 +25,7 @@ class TaskStatusConsumer<O> extends StatefulWidget {
 
 class _TaskStatusConsumerState<O> extends State<TaskStatusConsumer<O>> {
   late StreamSubscription _subscription;
-  late TaskState<dynamic, O> _taskState = TaskState.ready(input: null);
+  late TaskState<dynamic, O> _taskState = TaskState.ready();
 
   @override
   void initState() {

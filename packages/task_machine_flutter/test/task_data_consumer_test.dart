@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:task_machine/task_machine.dart';
 import 'package:task_machine_flutter/src/task_data_consumer.dart';
 
 import 'dummy_task.dart';
 
 void main() {
-  late Task task;
+  late DoNothingTask task;
   late TaskDataConsumer taskDataConsumer;
 
   setUp(() {
-    task = DoNothingTask(input: 0);
-    taskDataConsumer = TaskDataConsumer(
+    task = DoNothingTask();
+    taskDataConsumer = TaskDataConsumer<String>(
       task: task,
       loadingBuilder: () => Container(
         key: const ValueKey('loading'),
@@ -30,13 +29,13 @@ void main() {
 
   group('TaskDataConsumer', () {
     testWidgets('Should change view when states changes', (tester) async {
-      task.start();
+      task.start(input: 2);
       await tester.pumpWidget(taskDataConsumer);
       expect(find.byKey(const ValueKey('loading')), findsOneWidget);
       // ignore: invalid_use_of_protected_member
-      task.onData(4);
+      task.onData('my-data');
       await tester.pump(const Duration(milliseconds: 1));
-      expect(find.byKey(const ValueKey('exists-4')), findsOneWidget);
+      expect(find.byKey(const ValueKey('exists-my-data')), findsOneWidget);
       // ignore: invalid_use_of_protected_member
       task.onData(null);
       await tester.pump(const Duration(milliseconds: 1));

@@ -11,13 +11,14 @@ class TaskState<I, O> with EquatableMixin {
   final Status status;
   final Object? error;
   final bool isLoading;
-  final I input;
+  final I? input;
   final DataState<O>? output;
 
-  TaskState.ready({required this.input})
+  TaskState.ready()
       : status = Status.ready,
         error = null,
         isLoading = false,
+        input = null,
         output = null;
 
   TaskState.running({

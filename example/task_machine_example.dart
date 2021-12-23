@@ -7,25 +7,26 @@ void main() async {
   taskManager.tasksStream.listen((tasks) {
     print(tasks);
   });
-  taskManager.start(GetUserInfoTask(userId: 'user-id'));
-  taskManager.start(WatchChatMessagesTask(chatId: 'chat-id'));
+  taskManager.add(GetUserInfoTask());
+  taskManager.add(WatchChatMessagesTask());
 }
 
-class UserInfo {}
+class UserInfo {
+  final ID id;
+  UserInfo({required this.id});
+}
 
 typedef ID = String;
 
 // short living tasks
 class GetUserInfoTask extends Task<ID, UserInfo> {
-  GetUserInfoTask({required String userId}) : super(input: userId);
-
   @override
-  Future<void> execute() async {
+  Future<void> execute(ID userId) async {
     // from the data access layer service
     // UserDAO.getUserInfo(String id)
     await Future.delayed(const Duration(seconds: 1));
-    final info = UserInfo();
-    complete(info);
+    final info = UserInfo(id: userId);
+    complete(data: info);
   }
 }
 
@@ -34,10 +35,9 @@ class ChatMessage {}
 // long living task
 class WatchChatMessagesTask extends Task<ID, List<ChatMessage>> {
   StreamSubscription? _subscription;
-  WatchChatMessagesTask({required String chatId}) : super(input: chatId);
 
   @override
-  Future<void> execute() async {
+  Future<void> execute(ID chatId) async {
     final chatMessageStream = Stream.value([ChatMessage()]);
     // cancel previous subscription
     _subscription?.cancel();

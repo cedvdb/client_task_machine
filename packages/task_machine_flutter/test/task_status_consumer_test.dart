@@ -10,7 +10,7 @@ void main() {
     late TaskStatusConsumer taskStatusConsumer;
 
     setUp(() {
-      task = DoNothingTask(input: 0);
+      task = DoNothingTask();
       taskStatusConsumer = TaskStatusConsumer(
         task: task,
         readyBuilder: () => Container(key: const ValueKey('ready')),
@@ -24,11 +24,11 @@ void main() {
       await tester.pumpWidget(taskStatusConsumer);
       expect(find.byKey(const ValueKey('ready')), findsOneWidget);
       // ignore: invalid_use_of_protected_member
-      task.start();
+      task.start(input: 0);
       await tester.pump(const Duration(milliseconds: 1));
       expect(find.byKey(const ValueKey('running')), findsOneWidget);
       // ignore: invalid_use_of_protected_member
-      task.complete(4);
+      task.complete(data: '0');
       await tester.pump(const Duration(milliseconds: 1));
       expect(find.byKey(const ValueKey('completed')), findsOneWidget);
     });
@@ -37,7 +37,7 @@ void main() {
       await tester.pumpWidget(taskStatusConsumer);
       expect(find.byKey(const ValueKey('ready')), findsOneWidget);
       // ignore: invalid_use_of_protected_member
-      await task.start();
+      await task.start(input: 0);
       // ignore: invalid_use_of_protected_member
       task.onError(AnException());
       await tester.pump(const Duration(milliseconds: 1));

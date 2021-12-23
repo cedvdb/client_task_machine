@@ -1,13 +1,9 @@
 import 'package:task_machine/task_machine.dart';
 
-typedef Input = int;
-typedef Output = int;
-
-class DoNothingTask extends Task<Input, Output> {
+class DoNothingTask extends Task<int, String> {
   int executionCount = 0;
-  DoNothingTask({required int input}) : super(input: input);
   @override
-  Future<void> execute() async {
+  Future<void> execute(int input) async {
     executionCount++;
   }
 }

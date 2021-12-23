@@ -35,10 +35,9 @@ class TaskManager {
   }
 
   /// adds a [task] to the task stack and starts it
-  Future<void> start(Task task) {
+  void add(Task task) {
     _addTask(task);
     _listenToTask(task);
-    return task.start();
   }
 
   /// adds task to the different data structures

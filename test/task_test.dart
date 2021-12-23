@@ -3,9 +3,8 @@ import 'package:task_machine/task_machine.dart';
 
 class DoNothingTask extends Task<int, int> {
   int executionCount = 0;
-  DoNothingTask({required int input}) : super(input: input);
   @override
-  Future<void> execute() async {
+  Future<void> execute(int input) async {
     executionCount++;
   }
 }
@@ -17,16 +16,16 @@ void main() {
     late DoNothingTask task;
 
     setUp(() {
-      task = DoNothingTask(input: 4);
+      task = DoNothingTask();
     });
 
     test('should have initial state of ready', () async {
-      expect(task.state, equals(TaskState<int, int>.ready(input: 4)));
+      expect(task.state, equals(TaskState<int, int>.ready()));
     });
 
     test('Should start', () async {
       expect(task.executionCount, equals(0));
-      await task.start();
+      await task.start(input: 4);
       final expectedState =
           TaskState<int, int>.running(input: 4, isLoading: true);
       expect(task.stateStream, emitsInOrder([expectedState]));
@@ -34,8 +33,9 @@ void main() {
       expect(task.executionCount, equals(1));
     });
     test('Should complete with data exists', () {
+      task.start(input: 4);
       // ignore: invalid_use_of_protected_member
-      task.complete(8);
+      task.complete(data: 8);
       final expectedState = TaskState<int, int>.completed(
           input: 4, output: DataState<int>.loaded(8), error: null);
       expect(task.stateStream, emitsInOrder([expectedState]));
@@ -43,8 +43,9 @@ void main() {
     });
 
     test('Should complete with data not exists', () {
+      task.start(input: 4);
       // ignore: invalid_use_of_protected_member
-      task.complete(null);
+      task.complete(data: null);
       final expectedState = TaskState<int, int>.completed(
           input: 4, output: DataState<int>.loaded(null), error: null);
       expect(task.stateStream, emitsInOrder([expectedState]));
@@ -52,11 +53,11 @@ void main() {
     });
 
     test('Should restart ', () async {
-      await task.start();
+      await task.start(input: 4);
       // ignore: invalid_use_of_protected_member
-      task.complete(4);
+      task.complete(data: 4);
       // ignore: invalid_use_of_protected_member
-      task.restart(8);
+      task.start(input: 8);
       final expectedState = TaskState<int, int>.running(
         input: 8,
         isLoading: true,
@@ -69,14 +70,13 @@ void main() {
     });
 
     test('Should set error', () async {
-      await task.start();
+      await task.start(input: 4);
       final e = AnException();
       // ignore: invalid_use_of_protected_member
       task.onError(e);
       final expectedState = TaskState<int, int>.completed(
         input: 4,
         error: e,
-        // previous data still available
         output: null,
       );
       expect(task.stateStream, emitsInOrder([expectedState]));
@@ -84,7 +84,7 @@ void main() {
     });
 
     test('Should close', () async {
-      await task.start();
+      await task.start(input: 0);
       // ignore: invalid_use_of_protected_member
       await task.close();
       expect(task.stateStream.skip(1), emitsDone);

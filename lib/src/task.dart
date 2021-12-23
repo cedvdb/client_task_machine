@@ -23,7 +23,9 @@ abstract class Task<I, O> {
   late TaskState<I, O> _state;
   TaskState<I, O> get state => _state;
 
-  Task({required I input}) : _state = TaskState.ready(input: input);
+  Task() {
+    _setState(TaskState.ready());
+  }
 
   /// sets the state of the task to [taskState]
   void _setState(TaskState<I, O> taskState) {
@@ -37,42 +39,34 @@ abstract class Task<I, O> {
   // (and remove those predefined behaviors)
 
   /// Start the execution of the task with task state:
-  /// state: TaskRunning(input: state.input, isLoading: true)
+  /// state: TaskRunning(input: state.input, isLoading: true, output: state.output)
+  ///
+  /// note that start can be called multiple times during the lifetime of
+  /// a task. In which case the old output will still be there until a new one
+  /// replaces it (with complete(newData), or onData(newData))
   @mustCallSuper
-  Future<void> start() {
-    _setState(TaskState.running(input: state.input, isLoading: true));
-    return execute();
+  Future<void> start({required I input}) {
+    _setState(
+      TaskState.running(input: input, isLoading: true, output: state.output),
+    );
+    return execute(input);
   }
 
   /// main execution of the [Task]
   @protected
-  Future<void> execute();
-
-  /// restarts the execution of the task with a new [newInput] and by keeping
-  /// the same output until another is generated.
-  ///
-  /// TaskRunning(input: input, loading: true, output: state.output)
-  @mustCallSuper
-  @protected
-  Future<void> restart(I newInput) {
-    // not sure this method should stay or if start is enough if output
-    _setState(TaskState.running(
-        input: newInput, isLoading: true, output: state.output));
-    return execute();
-  }
+  Future<void> execute(I input);
 
   /// completes the task with task state:
   /// set status: Status.completed, output: DataState.loaded(outputData)
   /// throws TaskError if task is already completed
   @mustCallSuper
   @protected
-  void complete(O? outputData) {
+  void complete({required O? data}) {
     if (state.status == Status.completed) {
       throw TaskError('Task already completed');
     }
     _setState(
-      TaskState.completed(
-          input: state.input, output: DataState.loaded(outputData)),
+      TaskState.completed(input: state.input, output: DataState.loaded(data)),
     );
   }
 
@@ -91,11 +85,11 @@ abstract class Task<I, O> {
   /// set output: DataState.loaded(outputData), loading: true
   @mustCallSuper
   @protected
-  void onData(O? outputData) {
+  void onData(O? data) {
     _setState(
       TaskState.running(
         input: state.input,
-        output: DataState.loaded(outputData),
+        output: DataState.loaded(data),
         isLoading: false,
       ),
     );
