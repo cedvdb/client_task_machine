@@ -35,16 +35,16 @@ class TaskManager {
   }
 
   /// adds a [task] to the task stack and starts it
-  void add(Task task) {
-    _addTask(task);
+  void add<T>(Task task) {
+    _addTask<T>(task);
     _listenToTask(task);
   }
 
   /// adds task to the different data structures
-  void _addTask(Task task) {
-    final foundForType = _tasksByType[task.runtimeType] ?? {};
+  void _addTask<T>(Task task) {
+    final foundForType = _tasksByType[T] ?? {};
     foundForType.add(task);
-    _tasksByType[task.runtimeType] = foundForType;
+    _tasksByType[T] = foundForType;
     _allTasks.add(task);
   }
 
