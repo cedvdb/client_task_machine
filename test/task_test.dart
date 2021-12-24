@@ -20,14 +20,13 @@ void main() {
     });
 
     test('should have initial state of ready', () async {
-      expect(task.state, equals(TaskState<int, int>.ready()));
+      expect(task.state, equals(TaskReady<int, int>()));
     });
 
     test('Should start', () async {
       expect(task.executionCount, equals(0));
       await task.start(input: 4);
-      final expectedState =
-          TaskState<int, int>.running(input: 4, isLoading: true);
+      final expectedState = TaskRunning<int, int>(input: 4, isLoading: true);
       expect(task.stateStream, emitsInOrder([expectedState]));
       expect(task.state, equals(expectedState));
       expect(task.executionCount, equals(1));
@@ -36,7 +35,7 @@ void main() {
       task.start(input: 4);
       // ignore: invalid_use_of_protected_member
       task.complete(data: 8);
-      final expectedState = TaskState<int, int>.completed(
+      final expectedState = TaskCompleted<int, int>(
           input: 4, output: DataState<int>.loaded(8), error: null);
       expect(task.stateStream, emitsInOrder([expectedState]));
       expect(task.state, equals(expectedState));
@@ -46,7 +45,7 @@ void main() {
       task.start(input: 4);
       // ignore: invalid_use_of_protected_member
       task.complete(data: null);
-      final expectedState = TaskState<int, int>.completed(
+      final expectedState = TaskCompleted<int, int>(
           input: 4, output: DataState<int>.loaded(null), error: null);
       expect(task.stateStream, emitsInOrder([expectedState]));
       expect(task.state, equals(expectedState));
@@ -58,7 +57,7 @@ void main() {
       task.complete(data: 4);
       // ignore: invalid_use_of_protected_member
       task.start(input: 8);
-      final expectedState = TaskState<int, int>.running(
+      final expectedState = TaskRunning<int, int>(
         input: 8,
         isLoading: true,
         // previous data still available
@@ -74,7 +73,7 @@ void main() {
       final e = AnException();
       // ignore: invalid_use_of_protected_member
       task.onError(e);
-      final expectedState = TaskState<int, int>.completed(
+      final expectedState = TaskCompleted<int, int>(
         input: 4,
         error: e,
         output: null,

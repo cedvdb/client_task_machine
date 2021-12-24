@@ -24,7 +24,7 @@ abstract class Task<I, O> {
   TaskState<I, O> get state => _state;
 
   Task() {
-    _setState(TaskState.ready());
+    _setState(TaskReady());
   }
 
   /// sets the state of the task to [taskState]
@@ -39,15 +39,11 @@ abstract class Task<I, O> {
   // (and remove those predefined behaviors)
 
   /// Start the execution of the task with task state:
-  /// state: TaskRunning(input: state.input, isLoading: true, output: state.output)
-  ///
-  /// note that start can be called multiple times during the lifetime of
-  /// a task. In which case the old output will still be there until a new one
-  /// replaces it (with complete(newData), or onData(newData))
+  /// state: TaskRunning(input: state.input, isLoading: true)
   @mustCallSuper
   Future<void> start({required I input}) {
     _setState(
-      TaskState.running(input: input, isLoading: true, output: state.output),
+      TaskRunning(input: input, isLoading: true),
     );
     return execute(input);
   }
@@ -62,12 +58,14 @@ abstract class Task<I, O> {
   @mustCallSuper
   @protected
   void complete({required O? data}) {
-    if (state.status == Status.completed) {
-      throw TaskError('Task already completed');
+    final state = this.state;
+    if (state is TaskRunning<I, O>) {
+      _setState(
+        TaskCompleted(input: state.input, output: DataState.loaded(data)),
+      );
+    } else {
+      throw TaskError('cannot complete a task which is not running');
     }
-    _setState(
-      TaskState.completed(input: state.input, output: DataState.loaded(data)),
-    );
   }
 
   /// Set TaskState as:
@@ -75,10 +73,14 @@ abstract class Task<I, O> {
   @mustCallSuper
   @protected
   void onError(Object error) {
-    _setState(
-      TaskState.completed(
-          error: error, input: state.input, output: state.output),
-    );
+    final state = this.state;
+    if (state is TaskRunning<I, O>) {
+      _setState(
+        TaskCompleted(error: error, input: state.input, output: state.output),
+      );
+    } else {
+      throw TaskError('cannot add error to a non running task');
+    }
   }
 
   /// Used when a long running task has a stream of incoming data
@@ -86,20 +88,25 @@ abstract class Task<I, O> {
   @mustCallSuper
   @protected
   void onData(O? data) {
-    _setState(
-      TaskState.running(
-        input: state.input,
-        output: DataState.loaded(data),
-        isLoading: false,
-      ),
-    );
+    final state = this.state;
+    if (state is TaskRunning<I, O>) {
+      _setState(
+        TaskRunning(
+          input: state.input,
+          output: DataState.loaded(data),
+          isLoading: false,
+        ),
+      );
+    } else {
+      throw TaskError('cannot add data to a non running task');
+    }
   }
 
   /// closes the task, a closed task will be removed from the task manager
   @mustCallSuper
   @protected
   Future<void> close() async {
-    _setState(TaskState.closing(previousState: state));
+    _setState(TaskClosing());
     await _stateController.close();
   }
 
