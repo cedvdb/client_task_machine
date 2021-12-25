@@ -48,7 +48,7 @@ class _TaskStatusConsumerState<O> extends State<TaskStatusConsumer<O>> {
     if (_taskState.status == Status.ready) {
       return widget.readyBuilder();
     }
-    if (_taskState.status == Status.processing) {
+    if (_taskState.status == Status.running) {
       return widget.processingBuilder();
     }
     if (error != null) {
