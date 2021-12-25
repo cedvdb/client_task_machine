@@ -6,7 +6,7 @@ import 'package:task_machine/task_machine.dart';
 class TaskStatusConsumer<O> extends StatefulWidget {
   final Task<dynamic, O> task;
   final Widget Function() readyBuilder;
-  final Widget Function() runningBuilder;
+  final Widget Function() processingBuilder;
   final Widget Function(DataState<O>) completedBuilder;
   final Widget Function(Object e) errorBuilder;
 
@@ -14,7 +14,7 @@ class TaskStatusConsumer<O> extends StatefulWidget {
     Key? key,
     required this.task,
     required this.readyBuilder,
-    required this.runningBuilder,
+    required this.processingBuilder,
     required this.completedBuilder,
     required this.errorBuilder,
   }) : super(key: key);
@@ -48,8 +48,8 @@ class _TaskStatusConsumerState<O> extends State<TaskStatusConsumer<O>> {
     if (_taskState.status == Status.ready) {
       return widget.readyBuilder();
     }
-    if (_taskState.status == Status.running) {
-      return widget.runningBuilder();
+    if (_taskState.status == Status.processing) {
+      return widget.processingBuilder();
     }
     if (error != null) {
       return widget.errorBuilder(error);

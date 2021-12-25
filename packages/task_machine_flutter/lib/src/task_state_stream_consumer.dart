@@ -10,37 +10,39 @@ import 'package:task_machine/task_machine.dart';
 ///  - notExistsBuilder: if a task has data which does not exists (null or empty list)
 ///  - loadingBuilder: if the task has no data and is loading
 ///
-/// Both [existsBuilder] and [notExistsBuilder] have a [isLoading] parameter.
+/// Both [outputExistsBuilder] and [outputNotExistsBuilder] have a [isLoading] parameter.
 /// That is because a task can have data and still be loading. For example
 /// infinite scroll, chat messages, filters... Typically in those cases
 /// the data will still be displayed with sometimes a loading indicator.
-class TaskDataConsumer<O> extends StatefulWidget {
-  final Widget Function() loadingBuilder;
-  final Widget Function(O data, bool isLoading) existsBuilder;
-  final Widget Function(bool isLoading) notExistsBuilder;
+class TaskStateStreamConsumer<O> extends StatefulWidget {
+  final Widget Function() processingBuilder;
+  final Widget Function(O data, bool isLoading) outputExistsBuilder;
+  final Widget Function(bool isLoading) outputNotExistsBuilder;
   final Widget Function(Object) errorBuilder;
 
-  final Task<dynamic, O> task;
+  final Stream<TaskState<dynamic, O>> taskStateStream;
 
-  const TaskDataConsumer({
+  const TaskStateStreamConsumer({
     Key? key,
-    required this.task,
-    required this.loadingBuilder,
-    required this.existsBuilder,
-    required this.notExistsBuilder,
+    required this.taskStateStream,
+    required this.processingBuilder,
+    required this.outputExistsBuilder,
+    required this.outputNotExistsBuilder,
     required this.errorBuilder,
   }) : super(key: key);
 
   @override
-  State<TaskDataConsumer<O>> createState() => _TaskDataConsumerState<O>();
+  State<TaskStateStreamConsumer<O>> createState() =>
+      _TaskStateStreamConsumerState<O>();
 }
 
-class _TaskDataConsumerState<O> extends State<TaskDataConsumer<O>> {
+class _TaskStateStreamConsumerState<O>
+    extends State<TaskStateStreamConsumer<O>> {
   late StreamSubscription _subscription;
   late TaskState<dynamic, O> _taskState = TaskReady();
   @override
   void initState() {
-    _subscription = widget.task.stateStream.listen((taskState) {
+    _subscription = widget.taskStateStream.listen((taskState) {
       setState(() => _taskState = taskState);
     });
     super.initState();
@@ -62,15 +64,15 @@ class _TaskDataConsumerState<O> extends State<TaskDataConsumer<O>> {
       return widget.errorBuilder(error);
     }
     if (output is DataExists<O>) {
-      return widget.existsBuilder(output.data, state.isLoading);
+      return widget.outputExistsBuilder(output.data, state.isLoading);
     }
     if (output is DataNotExists<O>) {
-      return widget.notExistsBuilder(state.isLoading);
+      return widget.outputNotExistsBuilder(state.isLoading);
     }
 
     // this one must be last because it can be true for conditions above too.
     if (state.isLoading || state.status == Status.ready) {
-      return widget.loadingBuilder();
+      return widget.processingBuilder();
     }
 
     throw 'State $state not supported';

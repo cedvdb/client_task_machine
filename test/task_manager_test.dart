@@ -59,11 +59,11 @@ void main() {
         emitsInOrder(
           [
             [Status.ready],
-            [Status.running],
-            [Status.running, Status.running],
-            [Status.completed, Status.running],
-            [Status.closing, Status.running],
-            [Status.running]
+            [Status.processing],
+            [Status.processing, Status.processing],
+            [Status.completed, Status.processing],
+            [Status.closing, Status.processing],
+            [Status.processing]
           ],
         ),
       );

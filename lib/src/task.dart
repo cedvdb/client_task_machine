@@ -42,10 +42,13 @@ abstract class Task<I, O> {
   /// state: TaskRunning(input: state.input, isLoading: true)
   @mustCallSuper
   Future<void> start({required I input}) {
-    _setState(
-      TaskRunning(input: input, isLoading: true),
-    );
-    return execute(input);
+    if (state.status == Status.ready) {
+      _setState(
+        TaskProcessing(input: input, isLoading: true),
+      );
+      return execute(input);
+    }
+    return Future.value();
   }
 
   /// main execution of the [Task]
@@ -59,7 +62,7 @@ abstract class Task<I, O> {
   @protected
   void complete({required O? data}) {
     final state = this.state;
-    if (state is TaskRunning<I, O>) {
+    if (state is TaskProcessing<I, O>) {
       _setState(
         TaskCompleted(input: state.input, output: DataState.loaded(data)),
       );
@@ -74,7 +77,7 @@ abstract class Task<I, O> {
   @protected
   void onError(Object error) {
     final state = this.state;
-    if (state is TaskRunning<I, O>) {
+    if (state is TaskProcessing<I, O>) {
       _setState(
         TaskCompleted(error: error, input: state.input, output: state.output),
       );
@@ -89,9 +92,9 @@ abstract class Task<I, O> {
   @protected
   void onData(O? data) {
     final state = this.state;
-    if (state is TaskRunning<I, O>) {
+    if (state is TaskProcessing<I, O>) {
       _setState(
-        TaskRunning(
+        TaskProcessing(
           input: state.input,
           output: DataState.loaded(data),
           isLoading: false,

@@ -26,7 +26,7 @@ void main() {
     test('Should start', () async {
       expect(task.executionCount, equals(0));
       await task.start(input: 4);
-      final expectedState = TaskRunning<int, int>(input: 4, isLoading: true);
+      final expectedState = TaskProcessing<int, int>(input: 4, isLoading: true);
       expect(task.stateStream, emitsInOrder([expectedState]));
       expect(task.state, equals(expectedState));
       expect(task.executionCount, equals(1));
@@ -57,7 +57,7 @@ void main() {
       task.complete(data: 4);
       // ignore: invalid_use_of_protected_member
       task.start(input: 8);
-      final expectedState = TaskRunning<int, int>(
+      final expectedState = TaskProcessing<int, int>(
         input: 8,
         isLoading: true,
         // previous data still available

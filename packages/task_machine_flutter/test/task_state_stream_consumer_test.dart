@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:task_machine_flutter/src/task_data_consumer.dart';
+import 'package:task_machine_flutter/src/task_state_stream_consumer.dart';
 
 import 'dummy_task.dart';
 
 void main() {
   late DoNothingTask task;
-  late TaskDataConsumer taskDataConsumer;
+  late TaskStateStreamConsumer taskDataConsumer;
 
   setUp(() {
     task = DoNothingTask();
-    taskDataConsumer = TaskDataConsumer<String>(
-      task: task,
-      loadingBuilder: () => Container(
+    taskDataConsumer = TaskStateStreamConsumer<String>(
+      taskStateStream: task.stateStream,
+      processingBuilder: () => Container(
         key: const ValueKey('loading'),
       ),
-      existsBuilder: (data, _) => Container(
+      outputExistsBuilder: (data, _) => Container(
         key: ValueKey('exists-$data'),
       ),
-      notExistsBuilder: (_) => Container(
+      outputNotExistsBuilder: (_) => Container(
         key: const ValueKey('not-exists'),
       ),
       errorBuilder: (_) => Container(
