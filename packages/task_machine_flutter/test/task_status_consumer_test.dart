@@ -14,7 +14,7 @@ void main() {
       taskStatusConsumer = TaskStatusConsumer(
         task: task,
         readyBuilder: () => Container(key: const ValueKey('ready')),
-        processingBuilder: () => Container(key: const ValueKey('running')),
+        runningBuilder: () => Container(key: const ValueKey('running')),
         completedBuilder: (_) => Container(key: const ValueKey('completed')),
         errorBuilder: (e) => Container(key: const ValueKey('error')),
       );
