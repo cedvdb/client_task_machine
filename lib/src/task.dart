@@ -6,12 +6,12 @@ import 'package:rxdart/rxdart.dart';
 import 'data_state.dart';
 import 'task_state.dart';
 
-class TaskError {
+class TaskInvalidOperation {
   final String description;
-  TaskError(this.description);
+  TaskInvalidOperation(this.description);
 
   @override
-  String toString() => 'TaskError(description: $description)';
+  String toString() => 'TaskInvalidOperation(description: $description)';
 }
 
 abstract class Task<I, O> {
@@ -67,22 +67,22 @@ abstract class Task<I, O> {
         TaskCompleted(input: state.input, output: DataState.loaded(data)),
       );
     } else {
-      throw TaskError('cannot complete a task which is not running');
+      throw TaskInvalidOperation('cannot complete a task which is not running');
     }
   }
 
   /// Set TaskState as:
-  /// sets error: error, status: Status.completed
+  /// sets error: error, status: Status.error
   @mustCallSuper
   @protected
   void onError(Object error) {
     final state = this.state;
     if (state is TaskRunning<I, O>) {
       _setState(
-        TaskCompleted(error: error, input: state.input, output: state.output),
+        TaskError(error: error, input: state.input),
       );
     } else {
-      throw TaskError('cannot add error to a non running task');
+      throw TaskInvalidOperation('cannot add error to a non running task');
     }
   }
 
@@ -101,7 +101,7 @@ abstract class Task<I, O> {
         ),
       );
     } else {
-      throw TaskError('cannot add data to a non running task');
+      throw TaskInvalidOperation('cannot add data to a non running task');
     }
   }
 

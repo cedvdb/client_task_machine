@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import 'data_state.dart';
 
-enum Status { ready, running, completed, closing }
+enum Status { ready, running, completed, error, closing }
 
 // those properties could, and maybe should be on the task itself, but since
 // some properties
@@ -60,13 +60,13 @@ class TaskRunning<I, O> extends TaskState<I, O> {
 
 class TaskCompleted<I, O> extends TaskState<I, O> {
   @override
-  final Object? error;
+  final Object? error = null;
 
   @override
   final I input;
 
   @override
-  final DataState<O>? output;
+  final DataState<O> output;
 
   @override
   final bool isLoading = false;
@@ -77,7 +77,28 @@ class TaskCompleted<I, O> extends TaskState<I, O> {
   TaskCompleted({
     required this.input,
     required this.output,
-    this.error,
+  });
+}
+
+class TaskError<I, O> extends TaskState<I, O> {
+  @override
+  final Object error;
+
+  @override
+  final I input;
+
+  @override
+  final DataState<O>? output = null;
+
+  @override
+  final bool isLoading = false;
+
+  @override
+  final Status status = Status.error;
+
+  TaskError({
+    required this.input,
+    required this.error,
   });
 }
 

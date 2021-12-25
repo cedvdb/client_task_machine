@@ -35,8 +35,8 @@ void main() {
       task.start(input: 4);
       // ignore: invalid_use_of_protected_member
       task.complete(data: 8);
-      final expectedState = TaskCompleted<int, int>(
-          input: 4, output: DataState<int>.loaded(8), error: null);
+      final expectedState =
+          TaskCompleted<int, int>(input: 4, output: DataState<int>.loaded(8));
       expect(task.stateStream, emitsInOrder([expectedState]));
       expect(task.state, equals(expectedState));
     });
@@ -46,7 +46,7 @@ void main() {
       // ignore: invalid_use_of_protected_member
       task.complete(data: null);
       final expectedState = TaskCompleted<int, int>(
-          input: 4, output: DataState<int>.loaded(null), error: null);
+          input: 4, output: DataState<int>.loaded(null));
       expect(task.stateStream, emitsInOrder([expectedState]));
       expect(task.state, equals(expectedState));
     });
@@ -73,10 +73,9 @@ void main() {
       final e = AnException();
       // ignore: invalid_use_of_protected_member
       task.onError(e);
-      final expectedState = TaskCompleted<int, int>(
+      final expectedState = TaskError<int, int>(
         input: 4,
         error: e,
-        output: null,
       );
       expect(task.stateStream, emitsInOrder([expectedState]));
       expect(task.state, equals(expectedState));

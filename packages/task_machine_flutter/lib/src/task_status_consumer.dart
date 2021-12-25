@@ -43,16 +43,15 @@ class _TaskStatusConsumerState<O> extends State<TaskStatusConsumer<O>> {
 
   @override
   Widget build(BuildContext context) {
-    final error = _taskState.error;
-
-    if (_taskState.status == Status.ready) {
+    final state = _taskState;
+    if (state is TaskReady) {
       return widget.readyBuilder();
     }
-    if (_taskState.status == Status.running) {
+    if (state is TaskRunning) {
       return widget.runningBuilder();
     }
-    if (error != null) {
-      return widget.errorBuilder(error);
+    if (state is TaskError<dynamic, O>) {
+      return widget.errorBuilder(state.error);
     }
     if (_taskState.status == Status.completed) {
       return widget.completedBuilder(_taskState.output!);
