@@ -50,8 +50,8 @@ class _TaskStatusConsumerState<O> extends State<TaskStatusConsumer<O>> {
     if (state is TaskRunning) {
       return widget.runningBuilder();
     }
-    if (state is TaskError<dynamic, O>) {
-      return widget.errorBuilder(state.error);
+    if (state is TaskError) {
+      return widget.errorBuilder((state as TaskError).error);
     }
     if (_taskState.status == Status.completed) {
       return widget.completedBuilder(_taskState.output!);

@@ -24,11 +24,11 @@ abstract class Task<I, O> {
   TaskState<I, O> get state => _state;
 
   Task() {
-    _setState(TaskReady());
+    setState(TaskReady());
   }
 
   /// sets the state of the task to [taskState]
-  void _setState(TaskState<I, O> taskState) {
+  void setState(TaskState<I, O> taskState) {
     _state = taskState;
     _stateController.add(_state);
   }
@@ -43,9 +43,7 @@ abstract class Task<I, O> {
   @mustCallSuper
   Future<void> start({required I input}) {
     if (state.status == Status.ready) {
-      _setState(
-        TaskRunning(input: input, isLoading: true),
-      );
+      setState(TaskRunning(input: input, isLoading: true));
       return execute(input);
     }
     return Future.value();
@@ -63,7 +61,7 @@ abstract class Task<I, O> {
   void complete({required O? data}) {
     final state = this.state;
     if (state is TaskRunning<I, O>) {
-      _setState(
+      setState(
         TaskCompleted(input: state.input, output: DataState.loaded(data)),
       );
     } else {
@@ -78,7 +76,7 @@ abstract class Task<I, O> {
   void onError(Object error) {
     final state = this.state;
     if (state is TaskRunning<I, O>) {
-      _setState(
+      setState(
         TaskError(error: error, input: state.input),
       );
     } else {
@@ -93,7 +91,7 @@ abstract class Task<I, O> {
   void onData(O? data) {
     final state = this.state;
     if (state is TaskRunning<I, O>) {
-      _setState(
+      setState(
         TaskRunning(
           input: state.input,
           output: DataState.loaded(data),
@@ -109,7 +107,7 @@ abstract class Task<I, O> {
   @mustCallSuper
   @protected
   Future<void> close() async {
-    _setState(TaskClosing());
+    setState(TaskClosing());
     await _stateController.close();
   }
 
