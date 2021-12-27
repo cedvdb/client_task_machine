@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-abstract class DataState<O> {
+class DataState<O> {
   factory DataState.loaded(O? data) {
     if (data == null || (data is List && data.isEmpty)) {
       return const DataNotExists();
