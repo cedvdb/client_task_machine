@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:task_machine/task_machine.dart';
 
 /// Display different builders depending on [ReadState] stream.
-class ReadStateConsumer<O> extends StatefulWidget {
+class ReadStateConsumer<I, O> extends StatefulWidget {
   final Widget Function() loading;
-  final Widget Function(O? data, bool isUpdating)? completed;
-  final Widget Function(O data, bool isUpdating)? completedWithData;
-  final Widget Function(bool isUpdating)? completedWithoutData;
-  final Widget Function(Object) errorBuilder;
+  final Widget Function(ReadCompleted<I, O> readState)? completed;
+  final Widget Function(ReadCompletedWithData<I, O> readState)?
+      completedWithData;
+  final Widget Function(ReadCompletedWithoutData<I, O> readState)?
+      completedWithoutData;
+  final Widget Function(ReadError readState) errorBuilder;
 
-  final Stream<ReadState<dynamic, O>> readStateStream;
+  final Stream<ReadState<I, O>> readStateStream;
 
   const ReadStateConsumer({
     Key? key,
@@ -25,12 +27,13 @@ class ReadStateConsumer<O> extends StatefulWidget {
         super(key: key);
 
   @override
-  State<ReadStateConsumer<O>> createState() => _ReadStateConsumerState<O>();
+  State<ReadStateConsumer<I, O>> createState() =>
+      _ReadStateConsumerState<I, O>();
 }
 
-class _ReadStateConsumerState<O> extends State<ReadStateConsumer<O>> {
+class _ReadStateConsumerState<I, O> extends State<ReadStateConsumer<I, O>> {
   late StreamSubscription _subscription;
-  late ReadState<dynamic, O> _readState = const ReadUnstarted();
+  late ReadState<I, O> _readState = const ReadUnstarted();
   @override
   void initState() {
     _subscription = widget.readStateStream.listen((taskState) {
@@ -49,24 +52,24 @@ class _ReadStateConsumerState<O> extends State<ReadStateConsumer<O>> {
   Widget build(BuildContext context) {
     final state = _readState;
 
-    if (state is ReadLoading || state is ReadUnstarted) {
+    if (state is ReadLoading<I, O> || state is ReadUnstarted<I, O>) {
       return widget.loading();
     }
 
-    if (state is ReadError<dynamic, O>) {
-      return widget.errorBuilder(state.error);
+    if (state is ReadError<I, O>) {
+      return widget.errorBuilder(state);
     }
 
-    if (state is ReadCompleted<dynamic, O>) {
-      if (state is ReadCompletedWithData<dynamic, O> &&
+    if (state is ReadCompleted<I, O>) {
+      if (state is ReadCompletedWithData<I, O> &&
           widget.completedWithData != null) {
-        return widget.completedWithData!(state.output, state.isUpdating);
+        return widget.completedWithData!(state);
       }
-      if (state is ReadCompletedWithoutData<dynamic, O> &&
+      if (state is ReadCompletedWithoutData<I, O> &&
           widget.completedWithoutData != null) {
-        return widget.completedWithoutData!(state.isUpdating);
+        return widget.completedWithoutData!(state);
       }
-      return widget.completed!(state.output, state.isUpdating);
+      return widget.completed!(state);
     }
 
     throw 'State $state not supported';
