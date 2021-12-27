@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:task_machine/src/read_task.dart/read_state.dart';
+import 'read_state.dart';
 
 class TaskInvalidOperation {
   final String description;

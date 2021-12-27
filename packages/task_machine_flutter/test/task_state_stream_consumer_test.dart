@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:task_machine_flutter/src/task_state_stream_consumer.dart';
+import 'package:task_machine_flutter/src/read_state_stream_consumer.dart';
 
 import 'dummy_task.dart';
 

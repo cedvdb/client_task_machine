@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:task_machine/task_machine.dart';
@@ -20,7 +21,7 @@ class TaskStateStreamConsumer<O> extends StatefulWidget {
   final Widget Function(bool isLoading) outputNotExistsBuilder;
   final Widget Function(Object) errorBuilder;
 
-  final Stream<TaskState<dynamic, O>> taskStateStream;
+  final Stream<Read<dynamic, O>> taskStateStream;
 
   const TaskStateStreamConsumer({
     Key? key,
