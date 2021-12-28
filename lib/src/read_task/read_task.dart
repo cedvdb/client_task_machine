@@ -46,19 +46,16 @@ abstract class ReadTask<I, O> {
     return Future.value();
   }
 
-  /// starts a task even if already started
-  @mustCallSuper
-  Future<void> restart({required I input}) {
-    _setState(ReadLoading(input: input));
-    return execute(input);
-  }
-
   /// set the task as updating
   @mustCallSuper
-  update(I newInput) {
+  update(I input) {
     final state = this.state;
-    if (state is ReadStarted<I, O>) {
-      execute(newInput);
+    if (state is ReadCompleted<I, O>) {
+      _setState(
+        ReadCompleted.build(
+            input: input, output: state.output, isUpdating: true),
+      );
+      execute(input);
     } else {
       throw TaskInvalidOperation(
           'can not update a task which has not been started');
@@ -67,7 +64,7 @@ abstract class ReadTask<I, O> {
 
   /// main execution of the [Task]
   @protected
-  Future<void> execute(I newInput);
+  Future<void> execute(I input);
 
   /// completes the task with read complete state:
   /// throws [TaskInvalidOperation] if task is unstarted
