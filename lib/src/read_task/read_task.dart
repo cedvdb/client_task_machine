@@ -55,11 +55,8 @@ abstract class ReadTask<I, O> {
         ReadCompleted.build(
             input: input, output: state.output, isUpdating: true),
       );
-      execute(input);
-    } else {
-      throw TaskInvalidOperation(
-          'can not update a task which has not been started');
     }
+    execute(input);
   }
 
   /// main execution of the [Task]
