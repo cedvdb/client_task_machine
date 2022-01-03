@@ -8,12 +8,12 @@ class DataUnset<O> implements DataState<O> {
 }
 
 /// data is loading
-class DataLoading<I, O> implements DataState<O> {
+class DataLoading<O> implements DataState<O> {
   const DataLoading();
 }
 
 /// error while loading the data
-class DataError<I, O> implements DataState<O> {
+class DataError<O> implements DataState<O> {
   final Object error;
 
   const DataError({

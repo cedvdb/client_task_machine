@@ -14,7 +14,7 @@ dependencies:
   task_machine:
     git: 
       url: https://github.com/cedvdb/client_task_machine.git
-      branch: io
+      ref: io
 
 dev_dependencies:
   flutter_test:
