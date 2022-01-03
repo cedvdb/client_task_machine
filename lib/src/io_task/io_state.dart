@@ -19,6 +19,8 @@ class IOState<I, O> {
       : output = const DataUnset(),
         input = null;
 
+  const IOState.loading(this.input) : output = const DataLoading();
+
   IOState<I, O> copyWith({
     I? input,
     DataState<O>? output,
