@@ -29,4 +29,7 @@ abstract class Task<State> {
   close() {
     _stateController.close();
   }
+
+  @override
+  String toString() => '$runtimeType${state.toString()}';
 }
