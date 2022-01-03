@@ -3,38 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:task_machine/task_machine.dart';
 
 /// Display different builders depending on [ReadState] stream.
-class DataStateConsumer<O> extends StatefulWidget {
+class DataStreamConsumer<O> extends StatefulWidget {
   final Widget Function() loading;
   final Widget Function(DataState<O> dataState)? loaded;
   final Widget Function(DataExists<O> dataState)? exists;
   final Widget Function(DataNotExists<O> dataState)? notExists;
   final Widget Function(DataError<O> dataState) errorBuilder;
 
-  final Stream<ReadState<I, O>> readStateStream;
+  final Stream<DataState<O>> dataStream;
 
-  const DataStateConsumer({
+  const DataStreamConsumer({
     Key? key,
-    required this.readStateStream,
+    required this.dataStream,
     required this.loading,
     required this.errorBuilder,
     this.exists,
-    this.exists,
     this.notExists,
-  })  : assert(exists != null || (exists != null && notExists != null)),
+    this.loaded,
+  })  : assert(loaded != null || (exists != null && notExists != null)),
         super(key: key);
 
   @override
-  State<DataStateConsumer<I, O>> createState() =>
-      _DataStateConsumerState<I, O>();
+  State<DataStreamConsumer<O>> createState() => _DataStreamConsumerState<O>();
 }
 
-class _DataStateConsumerState<I, O> extends State<DataStateConsumer<I, O>> {
+class _DataStreamConsumerState<O> extends State<DataStreamConsumer<O>> {
   late StreamSubscription _subscription;
-  late ReadState<I, O> _readState = const ReadUnstarted();
+  late DataState<O> _dataState = const DataUnset();
   @override
   void initState() {
-    _subscription = widget.readStateStream.listen((taskState) {
-      setState(() => _readState = taskState);
+    _subscription = widget.dataStream.listen((taskState) {
+      setState(() => _dataState = taskState);
     });
     super.initState();
   }
@@ -47,24 +46,24 @@ class _DataStateConsumerState<I, O> extends State<DataStateConsumer<I, O>> {
 
   @override
   Widget build(BuildContext context) {
-    final state = _readState;
+    final state = _dataState;
 
-    if (state is ReadLoading<I, O> || state is ReadUnstarted<I, O>) {
+    if (state is DataUnset || state is DataLoading) {
       return widget.loading();
     }
 
-    if (state is ReadError<I, O>) {
+    if (state is DataError<O>) {
       return widget.errorBuilder(state);
     }
 
-    if (state is ReadCompleted<I, O>) {
-      if (state is ReadCompletedWithData<I, O> && widget.exists != null) {
+    if (state is DataLoaded<O>) {
+      if (state is DataExists<O> && widget.exists != null) {
         return widget.exists!(state);
       }
-      if (state is ReadCompletedWithoutData<I, O> && widget.notExists != null) {
+      if (state is DataNotExists<O> && widget.notExists != null) {
         return widget.notExists!(state);
       }
-      return widget.exists!(state);
+      return widget.loaded!(state);
     }
 
     throw 'State $state not supported';
