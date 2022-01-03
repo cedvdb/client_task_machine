@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class Task<State> {
@@ -16,8 +17,15 @@ abstract class Task<State> {
   }
 
   /// sets the state of the task to [taskState]
+  @protected
   void setState(State taskState) {
     _state = taskState;
     _stateController.add(_state);
+  }
+
+  @mustCallSuper
+  @protected
+  close() {
+    _stateController.close();
   }
 }

@@ -34,7 +34,9 @@ class TaskManager {
     return foundForType.first as T;
   }
 
-  /// adds a [task] to the task stack and starts it
+  void register<T>(Task Function() factory) {}
+
+  /// adds a [task] to the task stack
   void add<T>(Task task) {
     _addTask<T>(task);
     _listenToTask(task);
