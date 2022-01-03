@@ -3,35 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:task_machine/task_machine.dart';
 
 /// Display different builders depending on [ReadState] stream.
-class ReadStateConsumer<I, O> extends StatefulWidget {
+class DataStateConsumer<O> extends StatefulWidget {
   final Widget Function() loading;
-  final Widget Function(ReadCompleted<I, O> readState)? completed;
-  final Widget Function(ReadCompletedWithData<I, O> readState)?
-      completedWithData;
-  final Widget Function(ReadCompletedWithoutData<I, O> readState)?
-      completedWithoutData;
-  final Widget Function(ReadError readState) errorBuilder;
+  final Widget Function(DataState<O> dataState)? loaded;
+  final Widget Function(DataExists<O> dataState)? exists;
+  final Widget Function(DataNotExists<O> dataState)? notExists;
+  final Widget Function(DataError<O> dataState) errorBuilder;
 
   final Stream<ReadState<I, O>> readStateStream;
 
-  const ReadStateConsumer({
+  const DataStateConsumer({
     Key? key,
     required this.readStateStream,
     required this.loading,
     required this.errorBuilder,
-    this.completed,
-    this.completedWithData,
-    this.completedWithoutData,
-  })  : assert(completed != null ||
-            (completedWithData != null && completedWithoutData != null)),
+    this.exists,
+    this.exists,
+    this.notExists,
+  })  : assert(exists != null || (exists != null && notExists != null)),
         super(key: key);
 
   @override
-  State<ReadStateConsumer<I, O>> createState() =>
-      _ReadStateConsumerState<I, O>();
+  State<DataStateConsumer<I, O>> createState() =>
+      _DataStateConsumerState<I, O>();
 }
 
-class _ReadStateConsumerState<I, O> extends State<ReadStateConsumer<I, O>> {
+class _DataStateConsumerState<I, O> extends State<DataStateConsumer<I, O>> {
   late StreamSubscription _subscription;
   late ReadState<I, O> _readState = const ReadUnstarted();
   @override
@@ -61,15 +58,13 @@ class _ReadStateConsumerState<I, O> extends State<ReadStateConsumer<I, O>> {
     }
 
     if (state is ReadCompleted<I, O>) {
-      if (state is ReadCompletedWithData<I, O> &&
-          widget.completedWithData != null) {
-        return widget.completedWithData!(state);
+      if (state is ReadCompletedWithData<I, O> && widget.exists != null) {
+        return widget.exists!(state);
       }
-      if (state is ReadCompletedWithoutData<I, O> &&
-          widget.completedWithoutData != null) {
-        return widget.completedWithoutData!(state);
+      if (state is ReadCompletedWithoutData<I, O> && widget.notExists != null) {
+        return widget.notExists!(state);
       }
-      return widget.completed!(state);
+      return widget.exists!(state);
     }
 
     throw 'State $state not supported';

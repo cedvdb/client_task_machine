@@ -30,7 +30,7 @@ abstract class IOTask<I, O> extends Task<IOtate<I, O>> {
   @mustCallSuper
   Future<void> start({required I input}) {
     if (state.isNotStarted || state.input != input) {
-      setState(state.copyWith(input: DataExists(input)));
+      setState(state.copyWith(input: input));
       return execute(input);
     }
     return Future.value();
@@ -58,6 +58,7 @@ abstract class IOTask<I, O> extends Task<IOtate<I, O>> {
 
   /// closes the task, a closed task won't be able to emit anymore
   @protected
+  @override
   Future<void> close() async {
     await super.close();
   }

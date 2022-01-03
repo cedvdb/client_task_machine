@@ -12,7 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
   task_machine:
-    git: https://github.com/cedvdb/client_task_machine.git
+    git: 
+      url: https://github.com/cedvdb/client_task_machine.git
+      branch: io
 
 dev_dependencies:
   flutter_test:

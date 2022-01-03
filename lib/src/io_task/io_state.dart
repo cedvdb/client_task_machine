@@ -1,11 +1,12 @@
 import 'data_state.dart';
 
 class IOtate<I, O> {
-  final DataState<I> input;
+  late final I input;
+
   final DataState<O> output;
 
-  bool get isStarted => input is! DataUnset;
-  bool get isNotStarted => input is DataUnset;
+  bool get isStarted => output is! DataUnset;
+  bool get isNotStarted => output is DataUnset;
   bool get isLoading => output is DataLoading;
   bool get isLoaded => output is DataLoaded;
 
@@ -14,12 +15,10 @@ class IOtate<I, O> {
     required this.output,
   });
 
-  IOtate.unstarted()
-      : input = const DataUnset(),
-        output = const DataUnset();
+  IOtate.unstarted() : output = const DataUnset();
 
   IOtate<I, O> copyWith({
-    DataState<I>? input,
+    I? input,
     DataState<O>? output,
   }) {
     return IOtate<I, O>._(
