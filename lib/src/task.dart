@@ -8,6 +8,7 @@ abstract class Task<State> {
 
   /// emits when the task state changes
   late final Stream<State> stateStream = _stateController.stream;
+  late final Stream<void> closesStream = Stream.fromFuture(stateStream.drain());
 
   late State _state;
   State get state => _state;

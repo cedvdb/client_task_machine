@@ -14,12 +14,12 @@ class TaskInvalidOperation {
   String toString() => 'TaskInvalidOperation(description: $description)';
 }
 
-abstract class IOTask<I, O> extends Task<IOtate<I, O>> {
+abstract class IOTask<I, O> extends Task<IOState<I, O>> {
   late Stream<DataState<O>> outputStream = stateStream.map((s) => s.output);
   late Stream<DataExists<O>> outputExistsStream =
       outputStream.whereType<DataExists<O>>();
 
-  IOTask() : super(IOtate.unstarted());
+  IOTask() : super(const IOState.unstarted());
 
   // the methods below this basically call set state with a set of defined
   // states, if the defined state prove to not fit all use cases
@@ -53,7 +53,7 @@ abstract class IOTask<I, O> extends Task<IOtate<I, O>> {
   @protected
   void onError(Object error) {
     final state = this.state;
-    setState(state.copyWith(output: DataError(error: error)));
+    setState(state.copyWith(output: DataError(error)));
   }
 
   /// closes the task, a closed task won't be able to emit anymore

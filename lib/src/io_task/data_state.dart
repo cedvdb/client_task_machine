@@ -16,9 +16,7 @@ class DataLoading<O> implements DataState<O> {
 class DataError<O> implements DataState<O> {
   final Object error;
 
-  const DataError({
-    required this.error,
-  });
+  const DataError(this.error);
 }
 
 abstract class DataLoaded<O> implements DataState<O> {
