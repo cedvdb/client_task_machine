@@ -24,22 +24,22 @@ abstract class DataLoaded<O> implements DataState<O> {
 
   factory DataLoaded(O? output) {
     if (output == null || (output is List && output.isEmpty)) {
-      return DataExists(output);
+      return DataNotExists(output);
     }
-    return DataNotExists(output);
+    return DataExists(output);
   }
 }
 
 class DataNotExists<O> implements DataLoaded<O> {
   @override
-  final O data;
+  final O? data;
 
   const DataNotExists(this.data);
 }
 
 class DataExists<O> implements DataLoaded<O> {
   @override
-  final O? data;
+  final O data;
 
   const DataExists(this.data);
 }

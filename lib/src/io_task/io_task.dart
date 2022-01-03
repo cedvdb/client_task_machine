@@ -15,9 +15,11 @@ class TaskInvalidOperation {
 }
 
 abstract class IOTask<I, O> extends Task<IOState<I, O>> {
+  DataState<O> get output => state.output;
   late Stream<DataState<O>> outputStream = stateStream.map((s) => s.output);
-  late Stream<DataExists<O>> outputExistsStream =
-      outputStream.whereType<DataExists<O>>();
+  late Stream<O> outputDataStream = outputStream
+      .whereType<DataExists<O>>()
+      .map((dataState) => dataState.data);
 
   IOTask() : super(const IOState.unstarted());
 }
