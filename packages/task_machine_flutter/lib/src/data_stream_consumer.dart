@@ -5,10 +5,10 @@ import 'package:task_machine/task_machine.dart';
 /// Display different builders depending on [ReadState] stream.
 class DataStreamConsumer<O> extends StatefulWidget {
   final Widget Function() loading;
-  final Widget Function(DataState<O> dataState)? loaded;
-  final Widget Function(DataExists<O> dataState)? exists;
-  final Widget Function(DataNotExists<O> dataState)? notExists;
-  final Widget Function(DataError<O> dataState) errorBuilder;
+  final Widget Function(O? data)? loaded;
+  final Widget Function(O data)? exists;
+  final Widget Function(O? data)? notExists;
+  final Widget Function(Object error) errorBuilder;
 
   final Stream<DataState<O>> dataStream;
 
@@ -53,17 +53,17 @@ class _DataStreamConsumerState<O> extends State<DataStreamConsumer<O>> {
     }
 
     if (state is DataError<O>) {
-      return widget.errorBuilder(state);
+      return widget.errorBuilder(state.error);
     }
 
     if (state is DataLoaded<O>) {
       if (state is DataExists<O> && widget.exists != null) {
-        return widget.exists!(state);
+        return widget.exists!(state.data);
       }
       if (state is DataNotExists<O> && widget.notExists != null) {
-        return widget.notExists!(state);
+        return widget.notExists!(state.data);
       }
-      return widget.loaded!(state);
+      return widget.loaded!(state.data);
     }
 
     throw 'State $state not supported';
